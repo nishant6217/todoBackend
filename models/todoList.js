@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const todoSchema = mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

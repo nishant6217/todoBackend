@@ -5,12 +5,11 @@ const router = express.Router();
 
 router.use("/login", require("./login"));
 router.use("/signup", require("./signup"));
-router.use("/action",require("./action"));
+router.use("/action",passport.authenticate("jwt", { session: false }),require("./action"));
 router.get("/ping", passport.authenticate("jwt", { session: false }),async function(req,res){
-    console.log(req)
 return  res
-.status(422)
-.json({ success: false,data:req, message: "invalid username or password" });
+.status(200)
+.json({ success: true,data:req, message: "pong" });
 })
 
 

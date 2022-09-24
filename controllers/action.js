@@ -6,6 +6,12 @@ module.exports.todoFun = async (req, res) => {
     const { createdBy, status, id, name } = req.body;
     let guy = await Person.findOne({ email: createdBy });
     try {
+        if(!guy) {
+            return res.status(400).json({
+                message: `No Person with Provided Email`,
+                success: false
+            })
+        }
         if (createdBy, status, id, name) {
             let todo = await Todo.findOne({ id: id });
             if (!todo) {
@@ -52,7 +58,7 @@ module.exports.todoFun = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return res.status(500).json({
             message: `Internal Server Error`,
             error: error
