@@ -6,10 +6,4 @@ router.use("/login", require("./login"));
 router.use("/signup", require("./signup"));
 router.use("/action", authenticate, require("./action"));
 
-// router.get("/ping", passport.authenticate("jwt", { session: false }),async function(req,res){
-// return  res
-// .status(200)
-// .json({ success: true,data:req, message: "pong" });
-// })
-
 module.exports = router;

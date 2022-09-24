@@ -55,7 +55,6 @@ module.exports.todoFun = async (req, res) => {
       );
     }
   } catch (error) {
-    console.log(error);
     return returnStatement("Internal Server Error", false, "", 500, req, res);
   }
 };
@@ -66,7 +65,6 @@ module.exports.deleteTodo = async (req, res) => {
     if (id) {
       const user = req.user;
       const deleteTodo = await Todo.deleteOne({ _id: id, createdBy: user._id });
-      console.log(deleteTodo);
       if (deleteTodo.deletedCount == 1) {
         return returnStatement("Todo deleted", true, "", 200, req, res);
       } else {
@@ -83,7 +81,6 @@ module.exports.deleteTodo = async (req, res) => {
       );
     }
   } catch (error) {
-    console.log(error);
     return returnStatement("Internal Server Error", false, "", 500, req, res);
   }
 };
