@@ -1,99 +1,117 @@
 const Person = require("../models/individualPerson");
-const Todo = require("../models/todoList")
-
+const Todo = require("../models/todoList");
+const { returnStatement } = require("../commonFunctions/commonReponse");
 
 module.exports.todoFun = async (req, res) => {
-    const { createdBy, status, id, name } = req.body;
-    let guy = await Person.findOne({ email: createdBy });
-    try {
-        if(!guy) {
-            return res.status(400).json({
-                message: `No Person with Provided Email`,
-                success: false
-            })
+  const { status, name, id } = req.body;
+  const user = req.user;
+  try {
+    if (id && status && name) {
+      const todoUpdate = await Todo.update(
+        { _id: id, createdBy: user._id },
+        {
+          status: status,
+          name: name,
         }
-        if (createdBy, status, id, name) {
-            let todo = await Todo.findOne({ id: id });
-            if (!todo) {
-                const a = await Todo.create({
-                    status: status,
-                    id: id,
-                    name: name,
-                    createdBy: guy._id
-                });
-                if (a) {
-                    return res.status(200).json({
-                        message: `Todo Created`,
-                        success: true
-                    })
-                } else {
-                    return res.status(400).json({
-                        message: `Internal Server Error while todo Creation`,
-                        success: false
-                    });
-                }
-            } else {
-                const todoUpdate = await Todo.findByIdAndUpdate(todo._id, {
-                    status: status,
-                    id: id,
-                    name: name,
-                    createdBy: guy._id
-                })
-                if (todoUpdate) {
-                    return res.status(200).json({
-                        message: `Todo Updated`,
-                        success: true
-                    })
-                } else {
-                    return res.status(400).json({
-                        message: `Internal Server Error while todo updation`,
-                        success: false
-                    });
-                }
-            }
-        } else {
-            return res.status(400).json({
-                message: `Please provide all fields`,
-                success: false
-            });
-        }
-    } catch (error) {
-        // console.log(error)
-        return res.status(500).json({
-            message: `Internal Server Error`,
-            error: error
-        });
+      );
+      if (todoUpdate) {
+        return returnStatement("Todo Updated", true, "", 200, req, res);
+      } else {
+        return returnStatement(
+          "No Such todo found for updation",
+          false,
+          "",
+          400,
+          req,
+          res
+        );
+      }
+    } else if (status && name) {
+      const a = await Todo.create({
+        status: status,
+        name: name,
+        createdBy: user._id,
+      });
+      if (a) {
+        return returnStatement("Todo Created", true, "", 200, req, res);
+      } else {
+        return returnStatement(
+          "Error while todo Creation",
+          false,
+          "",
+          400,
+          req,
+          res
+        );
+      }
+    } else {
+      return returnStatement(
+        "Please provide all required fields",
+        false,
+        "",
+        422,
+        req,
+        res
+      );
     }
-}
+  } catch (error) {
+    console.log(error);
+    return returnStatement("Internal Server Error", false, "", 500, req, res);
+  }
+};
 
-
-module.exports.deleteTodo = async(req,res) =>{
-    const {id} = req.body;
-    if(id){
-        let todo = await Todo.findOne({id:id})
-        if(todo){
-            const a =await Todo.findByIdAndDelete(todo._id)
-            if (a) {
-                return res.status(200).json({
-                    message: `Todo deleted`,
-                    success: true
-                })
-            } else {
-                return res.status(400).json({
-                    message: `Internal Server Error while todo deletion`,
-                    success: false
-                });
-            }
-        }else{
-            return res.status(400).json({
-                message: `No Todo found to be deleted`,
-                success: false
-            });
-        }
-    }else{
-        return res.status(400).json({
-            message: `Please provide all fields`,
-            success: false
-        });
+module.exports.deleteTodo = async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (id) {
+      const user = req.user;
+      const deleteTodo = await Todo.deleteOne({ _id: id, createdBy: user._id });
+      console.log(deleteTodo);
+      if (deleteTodo.deletedCount == 1) {
+        return returnStatement("Todo deleted", true, "", 200, req, res);
+      } else {
+        return returnStatement("No Todo Present", false, "", 400, req, res);
+      }
+    } else {
+      return returnStatement(
+        "Please provide all details",
+        false,
+        "",
+        400,
+        req,
+        res
+      );
     }
-}
+  } catch (error) {
+    console.log(error);
+    return returnStatement("Internal Server Error", false, "", 500, req, res);
+  }
+};
+
+module.exports.getTodo = async function (req, res) {
+  try {
+    const user = req.user;
+    const todos = await Todo.find({ createdBy: user._id });
+    if (todos) {
+      return returnStatement(
+        `Todos Found for ${user.email}`,
+        true,
+        todos,
+        200,
+        req,
+        res
+      );
+    } else {
+      return returnStatement(
+        `No Todos found for ${user.email}`,
+        false,
+        "",
+        400,
+        req,
+        res
+      );
+    }
+  } catch (error) {
+    return returnStatement(`Internal Server error`, false, "", 500, req, res);
+  }
+};

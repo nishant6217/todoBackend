@@ -1,7 +1,6 @@
 {
   "name": "todobackend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,5 +16,16 @@
     "mongoose": "^5.13.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nishant6217/todoBackend.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/nishant6217/todoBackend/issues"
+  },
+  "homepage": "https://github.com/nishant6217/todoBackend#readme",
+  "description": ""
 }

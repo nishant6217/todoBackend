@@ -1,21 +1,28 @@
 const Person = require("../models/individualPerson");
+const { returnStatement } = require("../commonFunctions/commonReponse");
 
-module.exports.register = async (data) => {
-    const { name, email, password } = data;
-    if (name && email && password) {
-        let guy = await Person.findOne({ email: email });
-        if (guy) {
-            return "This guy already exists"
-        } else {
-            await Person.create({
-                email: email,
-                name: name,
-                password: password,
-            });
-            return "User Created"
-        }
+module.exports.register = async (req, res) => {
+  const { name, email, password } = req.body;
+  if (name && email && password) {
+    let user = await Person.findOne({ email: email });
+    if (user) {
+      return returnStatement("User Alreday exists", false, "", 422, req, res);
     } else {
-        return "Please enter required fields"
+      let user = await Person.create({
+        email: email,
+        name: name,
+        password: password,
+      });
+      return returnStatement("User Created", true, user, 200, req, res);
     }
-
-}
+  } else {
+    return returnStatement(
+      "Please provide all required fields",
+      false,
+      "",
+      422,
+      req,
+      res
+    );
+  }
+};
