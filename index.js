@@ -8,7 +8,7 @@ const db = require("./config/mongoose");
 app.use("/api", require("./routes/api"));
 
 app.listen(3000, () => {
-  console.log("start");
+  console.log(`Server started on port ${3000}`);
 });
 
 module.exports = app;
