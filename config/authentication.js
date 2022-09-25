@@ -1,4 +1,5 @@
 const JWT = require("jsonwebtoken");
+const logger = require("../logger");
 const Person = require("../models/individualPerson");
 
 const JWT_PRIVATE_KEY = "sjdfhiuhfijsdjfgheripipu98thrjeo8th";
@@ -19,11 +20,15 @@ module.exports.authenticate = async function (req, res, next) {
     const data = JWT.verify(token, JWT_PRIVATE_KEY);
 
     const user = await Person.findOne({ email: data.data.email });
-    if (!user) return res.sendStatus(401);
+    if (!user) {
+      logger.error(`No user found`)
+      return res.sendStatus(401);
+    }
 
     req.user = user;
     next();
   } catch (err) {
+    logger.error(`error while authenticating`)
     return res.sendStatus(401);
   }
 };
